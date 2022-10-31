@@ -60,5 +60,8 @@ Feel free to open a Pull Request to add/fix a code example. The more code we hav
 
 We really appreciate any contributions made ;)
 
+To keep the repository clean, we are using [commitlint](https://github.com/conventional-changelog/commitlint) that ensures that the commit messages are following the guidelines.
+Please run `yarn install` and `yarn husky install` to install the hook before making any changes or your pull request might get refused. 
+
 ## Contact
 If you have any questions or want to report a technical issue on our side, feel free to contact us at devops[at]ivao.aero & wdm[at]ivao.aero
