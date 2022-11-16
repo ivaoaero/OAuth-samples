@@ -32,7 +32,13 @@ Example can be found [here](https://github.com/ivaoaero/OAuth-samples/tree/main/
 
 This example how to authenticate users on frontend-only applications without the need of a backend. 
 
-_PS: This is how IVAO 2.0 ebsites (Webeye, FPL, Tracker) are working_
+_PS: This is how IVAO 2.0 websites (Webeye, FPL, Tracker) are working_
+
+### PHP without any libraries
+Example can be found [here](https://github.com/ivaoaero/OAuth-samples/tree/main/php-pure)
+
+This example shows both how to authenticate a user visiting your website as well as how to authenticate your backend application without any user interaction.
+
 ## How do I implement OAuth with IVAO APIs?
 
 ### Needed information
