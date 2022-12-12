@@ -32,16 +32,21 @@ Here are some links you can use :
 ## Examples provided in this repository
 
 ### ReactJS with 3rd-party libraries
-Example can be found [here](https://github.com/ivaoaero/OAuth-samples/tree/main/reactjs-with-lib)
+Example can be found [here (reactjs-with-lib)](https://github.com/ivaoaero/OAuth-samples/tree/main/reactjs-with-lib)
 
 This example how to authenticate users on frontend-only applications without the need of a backend. 
 
 _PS: This is how IVAO 2.0 websites (Webeye, FPL, Tracker) are working_
 
 ### PHP without any libraries
-Example can be found [here](https://github.com/ivaoaero/OAuth-samples/tree/main/php-pure)
+Example can be found [here (php-pure)](https://github.com/ivaoaero/OAuth-samples/tree/main/php-pure)
 
 This example shows both how to authenticate a user visiting your website as well as how to authenticate your backend application without any user interaction.
+
+### Laravel without Socialite
+Example can be found [here (laravel-pure)](https://github.com/ivaoaero/OAuth-samples/tree/main/laravel-pure)
+
+This example shows both how to authenticate a user visiting your website and how to store all his details in your database.
 
 ## How do I implement OAuth with IVAO APIs?
 
