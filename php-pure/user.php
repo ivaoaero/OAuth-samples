@@ -1,4 +1,7 @@
 <?php 
+// Set cookie name
+define('cookie_name', 'ivao_tokens');
+
 // Get all URLs we need from the server
 $openid_url = 'https://api.ivao.aero/.well-known/openid-configuration';
 $openid_result = file_get_contents($openid_url, false);
@@ -46,17 +49,17 @@ if (isset($_GET['code']) && isset($_GET['state'])) {
     $access_token = $token_res_data['access_token']; // Here is the access token
     $refresh_token = $token_res_data['refresh_token']; // Here is the refresh token
     
-    setcookie('ivao_tokens', json_encode(array(
+    setcookie(cookie_name, json_encode(array(
         'access_token' => $access_token,
         'refresh_token' => $refresh_token,
     )), time() + 60 * 60 * 24 * 30); // 30 days
 
     header('Location: user.php'); // Remove the code and state from URL since they aren't valid anymore 
 
-} elseif (isset($_COOKIE['ivao_tokens'])) {
+} elseif (isset($_COOKIE[cookie_name])) {
     // User has already logged in
 
-    $tokens = json_decode($_COOKIE['ivao_tokens'], true);
+    $tokens = json_decode($_COOKIE[cookie_name], true);
     $access_token = $tokens['access_token'];
     $refresh_token = $tokens['refresh_token'];
 
@@ -104,7 +107,7 @@ if (isset($_GET['code']) && isset($_GET['state'])) {
         $access_token = $token_res_data['access_token']; // Here is the new access token
         $refresh_token = $token_res_data['refresh_token']; // Here is the new refresh token
         
-        setcookie('ivao_tokens', json_encode(array(
+        setcookie(cookie_name, json_encode(array(
             'access_token' => $access_token,
             'refresh_token' => $refresh_token,
         )), time() + 60 * 60 * 24 * 30); // 30 days
