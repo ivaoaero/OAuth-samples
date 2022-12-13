@@ -112,52 +112,7 @@ class IvaoController extends Controller
             if (
                 isset($user_res_data["description"]) &&
                 $user_res_data["description"] ===
-                    "This auth token has been revoked or expired"
-            ) {
-                // Access token expired, using refresh token to get a new one
-
-                $token_req_data = [
-                    "grant_type" => "refresh_token",
-                    "refresh_token" => $refresh_token,
-                    "client_id" => $client_id,
-                    "client_secret" => $client_secret,
-                ];
-
-                $token_options = [
-                    "http" => [
-                        "header" =>
-                            "Content-type: application/x-www-form-urlencoded\r\n",
-                        "method" => "POST",
-                        "content" => http_build_query($token_req_data),
-                        "ignore_errors" => true,
-                    ],
-                ];
-                $token_context = stream_context_create($token_options);
-                $token_result = file_get_contents(
-                    $openid_data["token_endpoint"],
-                    false,
-                    $token_context
-                );
-                if ($token_result === false) {
-                    /* Handle error */
-                    die("Error while refreshing token");
-                }
-
-                $token_res_data = json_decode($token_result, true);
-
-                $access_token = $token_res_data["access_token"]; // Here is the new access token
-                $refresh_token = $token_res_data["refresh_token"]; // Here is the new refresh token
-
-                session([
-                    "ivao_tokens" => json_encode([
-                        "access_token" => $access_token,
-                        "refresh_token" => $refresh_token,
-                    ]),
-                ]);
-
-                return redirect()->route("ivao.login-sso");
-            } elseif (
-                isset($user_res_data["description"]) &&
+                    "This auth token has been revoked or expired" or
                 $user_res_data["description"] ===
                     "Couldn't decode auth token"
             ) {
