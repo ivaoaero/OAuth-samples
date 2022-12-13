@@ -54,7 +54,7 @@ if (isset($_GET['code']) && isset($_GET['state'])) {
         'refresh_token' => $refresh_token,
     )), time() + 60 * 60 * 24 * 30); // 30 days
 
-    header('Location: user.php'); // Remove the code and state from URL since they aren't valid anymore 
+    header('Location: ' . $redirect_uri); // Remove the code and state from URL since they aren't valid anymore 
 
 } elseif (isset($_COOKIE[cookie_name])) {
     // User has already logged in
@@ -112,7 +112,7 @@ if (isset($_GET['code']) && isset($_GET['state'])) {
             'refresh_token' => $refresh_token,
         )), time() + 60 * 60 * 24 * 30); // 30 days
 
-        header('Location: user.php'); // Try to use the access token again
+        header('Location: ' . $redirect_uri); // Try to use the access token again
     }
 
     var_dump($user_res_data); // Display user data fetched with the access token
