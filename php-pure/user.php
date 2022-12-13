@@ -115,7 +115,7 @@ if (isset($_GET['code']) && isset($_GET['state'])) {
         header('Location: ' . $redirect_uri); // Try to use the access token again
     }
 
-    var_dump($user_res_data); // Display user data fetched with the access token
+    var_dump($user_res_data); // Display user data (/v2/users/me in Core Doc) fetched with the access token
 } else {
     // First visit : Unauthenticated user
     
