@@ -113,6 +113,11 @@ if (isset($_GET['code']) && isset($_GET['state'])) {
         )), time() + 60 * 60 * 24 * 30); // 30 days
 
         header('Location: ' . $redirect_uri); // Try to use the access token again
+    } elseif (isset($user_res_data['description']) && ($user_res_data['description'] === 'No auth token found in request')) {
+        // Access token missing from the cookie, delete cookie and authenticate user again
+
+        setcookie(cookie_name, "", time() - 3600); // reset cookie value to null and expire time to last hour
+        header('Location: ' . $redirect_uri); // Try to login again
     }
 
     var_dump($user_res_data); // Display user data (/v2/users/me in Core Doc) fetched with the access token
