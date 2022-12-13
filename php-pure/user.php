@@ -77,7 +77,7 @@ if (isset($_GET['code']) && isset($_GET['state'])) {
     $user_res_data = json_decode($user_result, true);
 
 
-    if (isset($user_res_data['description']) && ($user_res_data['description'] === 'This auth token has been revoked or expired' or $user_res_data['description'] === 'Couldn\'t decode auth token')) {
+    if (isset($user_res_data['description']) && ($user_res_data['description'] === 'This auth token has been revoked or expired' || $user_res_data['description'] === 'Couldn\'t decode auth token')) {
         // Access token expired, using refresh token to get a new one
 
         $token_req_data = array(
