@@ -111,10 +111,10 @@ class IvaoController extends Controller
 
             if (
                 isset($user_res_data["description"]) &&
-                $user_res_data["description"] ===
+                ($user_res_data["description"] ===
                     "This auth token has been revoked or expired" or
                 $user_res_data["description"] ===
-                    "Couldn't decode auth token"
+                    "Couldn't decode auth token")
             ) {
                 // Access token expired, using refresh token to get a new one
 
