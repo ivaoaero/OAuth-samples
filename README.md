@@ -27,7 +27,7 @@ Here are some links you can use :
  - [Server Side Apps](https://www.oauth.com/oauth2-servers/server-side-apps/)
  - [Single Page Apps](https://www.oauth.com/oauth2-servers/single-page-apps/)
  - [Main Links](https://www.oauth.com/#in-page)
- - [IVAO OpenID Information](https://api-stage.ivao.aero/.well-known/openid-configuration)
+ - [IVAO OpenID Information](https://api.ivao.aero/.well-known/openid-configuration)
 
 ## Examples provided in this repository
 
