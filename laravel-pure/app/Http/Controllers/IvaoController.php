@@ -42,7 +42,7 @@ class IvaoController extends Controller
         if (isset($request->code) && isset($request->state)) {
             // User has been redirected back from the login page
 
-            $code = $request->code; // Valid only 15 seconds
+            $code = $request->code; // Valid only 5 minutes
 
             $token_req_data = [
                 "grant_type" => "authorization_code",

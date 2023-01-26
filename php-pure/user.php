@@ -19,7 +19,7 @@ $redirect_uri = 'http://localhost:8000/user.php';
 if (isset($_GET['code']) && isset($_GET['state'])) {
     // User has been redirected back from the login page
 
-    $code = $_GET['code']; // Valid only 15 seconds
+    $code = $_GET['code']; // Valid only 5 minutes
 
     $token_req_data = array(
         'grant_type' => 'authorization_code',

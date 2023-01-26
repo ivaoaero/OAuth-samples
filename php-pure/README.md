@@ -20,7 +20,7 @@ You need to redirect your visitor (automatically or after a click on a link) to 
 ### 2. User is redirected back to your website
 In the redirect URL you specified, the user will have 2 params : `code` and `state` that you'll need to use in order to get an access token. 
 
-**Important** : The `code` is valid only 15 seconds, so you need to exchange it immediately for an access_token!
+**Important** : The `code` is valid only 5 minutes, so you need to exchange it quickly for an access_token!
 
 ### 3. Exchange the authorization code for an access token
 
