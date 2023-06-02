@@ -51,7 +51,7 @@ This example shows both how to authenticate a user visiting your website and how
 ## How do I implement OAuth with IVAO APIs?
 
 ### Needed information
-To use the OAuth flow, you'll need to email us at devops[at]ivao.aero & wdm[at]ivao.aero with the following pieces of information : 
+To use the OAuth flow, you'll need to email us at web[at]ivao.aero with the following pieces of information : 
 
 - Scope usage: Are you going to use this access for a divisional tool, a third-party tool, a virtual-airline tool or personal use? 
 - Valid email address: We need an address at which we can contact you at any point for the following reasons :
