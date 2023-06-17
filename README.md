@@ -13,7 +13,7 @@ We will provide some examples and suggestions in this repo, but all the login fl
 
 Any 3-rd party tools supporting OAuth login should work out of the box.
 
-If you have any issues or notice something unexpected happening on our end, please email us at devops[at]ivao.aero & wdm[at]ivao.aero.
+If you have any issues or notice something unexpected happening on our end, please email us at [web@ivao.aero](mailto:web@ivao.aero).
 
 ### Disclaimer
 As much as we would like to help each and every one of you, please understand that we currently don't have the manpower to support all technical issues you migth encounter.
@@ -54,7 +54,7 @@ Documentation can be found [here (moodle)](https://github.com/ivaoaero/OAuth-sam
 ## How do I implement OAuth with IVAO APIs?
 
 ### Needed information
-To use the OAuth flow, you'll need to email us at web[at]ivao.aero with the following pieces of information : 
+To use the OAuth flow, you'll need to email us at [web@ivao.aero](mailto:web@ivao.aero) with the following pieces of information : 
 
 - Scope usage: Are you going to use this access for a divisional tool, a third-party tool, a virtual-airline tool or personal use? 
 - Valid email address: We need an address at which we can contact you at any point for the following reasons :
@@ -65,7 +65,7 @@ To use the OAuth flow, you'll need to email us at web[at]ivao.aero with the foll
 ### Application data
 Once your request is approved, you will be given a CLIENT_ID and a CLIENT_SECRET (obviously has to stay private) which you can use to authenticate the users and your applications.
 
-If you think it could be possible that your Client Secret token was leaked, please get in touch with us immediately at devops[at]ivao.aero & wdm[at]ivao.aero
+If you think it could be possible that your Client Secret token was leaked, please get in touch with us immediately at [web@ivao.aero](mailto:web@ivao.aero).
 
 ### Test Data
 If you want to test out the OAuth flow locally before requesting production data, here is the data you can use to test : 
@@ -96,4 +96,4 @@ To keep the repository clean, we are using [commitlint](https://github.com/conve
 Please run `yarn install` and `yarn husky install` to install the hook before making any changes or your pull request might get refused. 
 
 ## Contact
-If you have any questions or want to report a technical issue on our side, feel free to contact us at devops[at]ivao.aero & wdm[at]ivao.aero
+If you have any questions or want to report a technical issue on our side, feel free to contact us at [web@ivao.aero](mailto:web@ivao.aero)
