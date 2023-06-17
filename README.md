@@ -48,6 +48,9 @@ Example can be found [here (laravel-pure)](https://github.com/ivaoaero/OAuth-sam
 
 This example shows both how to authenticate a user visiting your website and how to store all his details in your database.
 
+### Moodle
+Documentation can be found [here (moodle)](https://github.com/ivaoaero/OAuth-samples/tree/main/moodle)
+
 ## How do I implement OAuth with IVAO APIs?
 
 ### Needed information
