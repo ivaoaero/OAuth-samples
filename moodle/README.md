@@ -102,7 +102,9 @@ Here are the options to configure under [Site administration > Plugins > Authent
 - **Domain Hint**: Not needed
 - **Login Flow**: `Authorization Code Flow` is the one supported by IVAO OAuth and also recommended by the plugin
 - **User Restrictions**: Not needed if you want to allow all users to login with IVAO
-- **Single Sign Out**: Not implemented yet by IVAO
+- **Single Sign Out**: This option is not required and is not recommended by IVAO
+- **IdP Logout Endpoint**: If you choose to use the option above, here is the URL to use: `https://sso.ivao.aero/logout`
+- **Front-channel Logout URL**: Not supported by IVAO
 - **Provider Display Name**: Name on the button to use OpenID Connect. We suggest "_Login with IVAO_"
 - **Custom Icon**: Use any IVAO Logo in respect to the [IVAO Branding Guidelines](https://brand.ivao.aero/logo/). We suggest using `https://static.ivao.aero/favicon.ico`
 
