@@ -125,6 +125,18 @@ We recommand setting `Update Local` to `On every login` for all the fields above
 ### User VID not mapped
 If you want to use the user's VID in your Moodle User mapping, [please refer to this issue](https://github.com/microsoft/o365-moodle/issues/2295)
 
+### Default Login Form is still displayed
+To remove the default login form to force users to use the IVAO SSO following these steps:
+Site Administration > Appearance > Click on your Theme > Advanced Settings > Under RAW SCSS enter `.login-form {display:none}`
+
+### Prevent Sign Up
+To force the use of the IVAO SSO and to prevent manual registrations:
+Site Administration > Plugins > Authentication > Manage authentication > Disable `Email-based self-registration`
+
+### To prevent profiles being edited
+To prevent users changing their profiles ie VIDs, Names and Ratings
+Site Administration > Plugins > Authentication > OAuth2 > Lock the required User Fields
+
 # Support
 
 If you encounter any issue, please contact us on the Discord channels or at [web@ivao.aero](mailto:web@ivao.aero)
