@@ -181,7 +181,7 @@ class IvaoController extends Controller
             return $staff;
         }
 
-        $finduser = User::where("id", intval($user["id"]))->first();
+        $finduser = User::where("vid", intval($user["id"]))->first();
 
         if ($finduser) {
             $finduser->firstname = $user["firstName"];
