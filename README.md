@@ -28,6 +28,7 @@ Here are some links you can use :
  - [Single Page Apps](https://www.oauth.com/oauth2-servers/single-page-apps/)
  - [Main Links](https://www.oauth.com/#in-page)
  - [IVAO OpenID Information](https://api.ivao.aero/.well-known/openid-configuration)
+ - [IVAO OAuth Scopes](https://wiki.ivao.aero/en/home/devops/api/oauth-scopes)
 
 ## Examples provided in this repository
 
