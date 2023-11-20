@@ -83,6 +83,8 @@ If you want to test out the OAuth flow locally before requesting production data
 
 _dev.ivao.aero is supposed to point to 127.0.0.1, if not, create a local record [How to edit your host file](https://www.siteground.com/kb/hosts-file/)_
 
+**Test credentials work only on the `/v2/users/me` endpoint because they are made to test your setup. For other endpoints, use your own credentials.**
+
 ## Issues
 If you need any help, try using the official support channels on the Community or Staff servers, where other developers will try to assist you.
 
