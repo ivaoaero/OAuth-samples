@@ -1,9 +1,10 @@
 """IVAO OAuth2 module
 
-This module contains the OAuth2 class, which is used to refresh the access token and get the user's information.
+This module contains the OAuth2 class, which is used to authenticate with the IVAO Single Sign-On (SSO) system, or to refresh the access token and get the user's information.
 
 This file can also be imported as a module and contains the following functions:
 
+    * get_sso_url - can be called to get the Single Sign-On URL
     * refresh_token - can be called to gain a new access token and refresh token
     * getUserInfo - can be called to get the user's information (from IVAO API)
 
@@ -11,21 +12,30 @@ Further information can be found in the docstrings of the functions: parameters 
 Documentation for aiohttp can be found at https://docs.aiohttp.org/en/stable/
 IVAO API documentation can be found at https://api.ivao.aero/docs at the OAUTH section, scheme at https://api.ivao.aero/docs/oauth-json
 
-Import this file as a module like this and use the OAuth2 module:
-    `from oauth2 import OAuth2`
-    `oauth2 = OAuth2(CLIENTID, CLIENTSECRET, STATE)`
-
 You should store the Client ID and Client Secret in a .env file and load them with the `dotenv` module:
     `from dotenv import load_dotenv`
+
     `load_dotenv()`
-    `CLIENTID = os.getenv("CLIENTID")`
-    `CLIENTSECRET = os.getenv("CLIENTSECRET")`
+    
+    `CLIENTID = os.getenv("CLIENT_ID")`
+    
+    `CLIENTSECRET = os.getenv("CLIENT_SECRET")`
+    
     `STATE = os.getenv("STATE")`
+    
+    `OPENID_URL = os.getenv("OPENID_URL")`
+    
+    `REDIRECT_URI = os.getenv("REDIRECT_URI")`
+
+Import this file as a module like this and use the OAuth2 module:
+    `from oauth2 import OAuth2`
+
+    `oauth2 = OAuth2(CLIENTID, CLIENTSECRET, STATE, OPENID_URL, REDIRECT_URI)`
 
 For support, contact: https://ivao.aero/Member.aspx?Id=677678 or drop an email to tancsics.gergely@ivao.aero / https://discord.hu.ivao.aero
 """
 
-import aiohttp, logging, traceback
+import aiohttp, logging, traceback, urllib.request, json
 from typing import Union
 
 class OAuth2:
@@ -42,21 +52,54 @@ class OAuth2:
         The client secret of the OAuth application.
     STATE: `str`
         The state variable of the application.
+    OPENID_URL: `str`
+        The URL to get the OpenID data from the IVAO API.
+    REDIRECT_URI: `str`
+        The redirect URI of the OAuth application.
 
     Methods
     -------
+    get_sso_url() -> str:
+        Gets the Single Sign-On URL.
     refresh_token(refreshtoken: str, revoke: bool = False) -> Union[dict, str]:
-        Uses the /v2/oauth/token endpoint to gain a new access token and refresh token.
+        Async coro, uses the /v2/oauth/token endpoint to gain a new access token and refresh token.
     getUserInfo(userid: int, mysqlpool: MySQLPool, revoke: bool = False) -> Union[dict, str]:
-        Uses the /v2/users/me endpoint to get the user's information.
+        Async coro, uses the /v2/users/me endpoint to get the user's information.
     """
-    def __init__(self, client_id: str, client_secret: str, state: str) -> None:
+    def __init__(self, client_id: str, client_secret: str, state: str, openid_url: str, redirect_uri: str) -> None:
         # You can either connect to an existing logger or create a new one. In that case further configuration is needed.
         self.logger = logging.getLogger('oauth')
         self.CLIENT_ID = client_id
         self.CLIENT_SECRET = client_secret
         self.STATE = state
+        self.OPENID_URL = openid_url
+        self.REDIRECT_URI = redirect_uri
+
+        self.openid_data = None
+        self.logger = logging.getLogger('oauth')
+
+        openid_result = urllib.request.urlopen(self.OPENID_URL).read().decode('utf-8')
+        if openid_result is None:
+            self.logger.error('Error while getting openid data')
+            raise Exception('Error while getting openid data')
+
+        self.openid_data = json.loads(openid_result)
         self.logger.info("OAuth2 initialized.")
+
+    def get_sso_url(self) -> str:
+        """
+        Gets the Single Sign-On URL.
+
+        Returns
+        -------
+        `str`:
+            The Single Sign-On URL.
+        """
+        base_url = self.openid_data['authorization_endpoint']
+        response_type = 'code'
+        scopes = 'profile configuration email'
+        sso_url = f"{base_url}?response_type={response_type}&client_id={self.CLIENT_ID}&scope={scopes}&redirect_uri={self.REDIRECT_URI}"
+        return sso_url
 
     async def refresh_token(self, refreshtoken: str, revoke: bool = False) -> Union[dict, str]:
         """
@@ -110,15 +153,17 @@ class OAuth2:
                     traceback.print_exc() # This will print the traceback to the console, you can remove it if you want to.
                     return newauthdata
 
-    async def getUserInfo(self, refreshtoken: str, revoke: bool = False) -> Union[dict, str]:
+    async def getUserInfo(self, refreshtoken: str = None, authtoken: str = None, revoke: bool = False) -> Union[dict, str]:
         """
         Uses the /v2/users/me endpoint to get the user's information. Returns everything that the IVAO API returns about the user, in a raw format.
-        If the access token is invalid, it will be refreshed with the refresh_token function and the new access token will be used.
+        Only provide one of the two parameters, refreshtoken or authtoken. If both are provided, the method will return an error message.
 
         Parameters
         ----------
         refreshtoken: `str`
             The refresh token of the user to get a new access token for.
+        authtoken: `str`
+            The access token of the user to get the user's information.
         revoke: `bool`
             Whether or not to revoke the old refresh token, defaults to False.
 
@@ -132,23 +177,37 @@ class OAuth2:
         Calls
         -----
         `refresh_token`:
-            If the access token is invalid, it will be refreshed with the refresh_token function and the new access token will be used.
+            If the refresh token is provided, it will call the refresh_token method to get a new access token and refresh token.
         """
 
-        try:
-            newauthdata = await self.refresh_token(refreshtoken, revoke)
-        except Exception as e:
-            self.logger.error(e)
-            traceback.print_exc() # This will print the traceback to the console, you can remove it if you want to.
-            return str(e)
+        if authtoken and not refreshtoken:
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with session.get("https://api.ivao.aero/v2/users/me", headers={"Authorization": "Bearer " + authtoken}) as data:
+                        return await data.json()
+            except Exception as e:
+                self.logger.error(e)
+                traceback.print_exc()
+                return str(e)
 
-        if isinstance(newauthdata, str):
-            return newauthdata
+        elif refreshtoken and not authtoken:
+            try:
+                newauthdata = await self.refresh_token(refreshtoken, revoke)
+            except Exception as e:
+                self.logger.error(e)
+                traceback.print_exc() # This will print the traceback to the console, you can remove it if you want to.
+                return str(e)
 
-        if newauthdata.get('access_token'):
-            async with aiohttp.ClientSession() as session:
-                async with session.get("https://api.ivao.aero/v2/users/me", headers={"Authorization": "Bearer " + newauthdata['access_token']}) as data:
-                    return await data.json()
+            if isinstance(newauthdata, str):
+                return newauthdata
+
+            if newauthdata.get('access_token'):
+                async with aiohttp.ClientSession() as session:
+                    async with session.get("https://api.ivao.aero/v2/users/me", headers={"Authorization": "Bearer " + newauthdata['access_token']}) as data:
+                        return await data.json()
+
+            else:
+                return newauthdata
 
         else:
-            return newauthdata
+            return "No refresh token or access token provided, or both were provided. Please provide only one of the two."
