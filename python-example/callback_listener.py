@@ -13,24 +13,28 @@ This script is not intended to be used in a production environment, it is only a
 
 Functions
 ---------
-async callback() -> str
+async def callback() -> str:
+    Asyncronous function.
     This function is called when the callback is received from the IVAO SSO.
     It will print the authorization code to the console and return a message to the user in the browser.
 
-async start_server() -> None
+async def start_server(server_started: asyncio.Event) -> None:
+    Asyncronous function.
     This function starts the server to listen for the callback.
 
-async get_authorization_code() -> str
-    This function starts the server and gets the authorization code from the user.
+def getcookie() -> dict:
+    This function is used to get the cookie from the browser storage. It can be printed to the user, or used in the code as a variable.
 
-async main() -> None
+async def main() -> None:
+    Asyncronous function.
     This function gets the authorization code from the user and prints it to the console.
 """
 
-import os, asyncio, traceback
-from flask import Flask, request
+import os, asyncio, traceback, random
+from flask import Flask, request, make_response, redirect
 from oauth2 import OAuth2
 from dotenv import load_dotenv
+
 load_dotenv()
 
 CLIENT_ID = os.getenv("CLIENT_ID")
@@ -38,11 +42,12 @@ CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 CLIENT_STATE = os.getenv("STATE")
 OPENID_URL = os.getenv("OPENID_URL")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
-
-oauth2 = OAuth2(CLIENT_ID, CLIENT_SECRET, CLIENT_STATE, OPENID_URL, REDIRECT_URI)
+YOUR_SITE_DOMAIN = os.getenv("YOUR_SITE_DOMAIN")
 
 app = Flask(__name__)
-authorization_code = None
+app.secret_key = os.urandom(24)  # Set a secret key for session management
+
+oauth2 = OAuth2(CLIENT_ID, CLIENT_SECRET, CLIENT_STATE, OPENID_URL, REDIRECT_URI)
 
 @app.route('/')
 async def callback() -> str:
@@ -53,55 +58,109 @@ async def callback() -> str:
     Returns
     -------
     Result: `str`
-        A message to the user in the browser either containing the error or the authorization code and the user's information.
+        A message to the user in the browser.
+    Errors/Exceptions: `str`
+        An error message if an unhandled exception occurs.
+
+    Redirects
+    ---------
+    Redirects the user to the login page if the authorization code is not present.
     """
-    global authorization_code
-    authorization_code = request.args.get('code')
-    authorization_code = authorization_code.split(' ')[0]
-    # print(f'Authorization code: {authorization_code}')
     try:
+        authorization_code = request.args.get('code')
+        authorization_code = authorization_code.split(' ')[0]
         userinfo = await oauth2.getUserInfo(authtoken=authorization_code)
         success = f'Authentication successful, you can close this tab.\nYour authorization code is:\n{authorization_code}\n'
         user = f'Your user info:\n{userinfo}\n'
         msg = success + user
-        return msg
+        response = make_response(msg)
+        response.set_cookie('authorization_code', authorization_code, max_age=1800) # Set the cookie to expire in 30 minutes (1800 seconds)
+
+        # This will be the actual code you want to use, containing a site restriction and secure cookie.
+        # response.set_cookie('authorization_code', authorization_code, max_age=1800, domain=YOUR_SITE_DOMAIN, secure=True, httponly=True, samesite='Strict')
+        return response, str(request.cookies)
+
+    except AttributeError:
+        return redirect('/login') # Redirect the user to the login page if the authorization code is not present
+
     except Exception as e:
         traceback.print_exc()
         return f'Error occurred: {e}'
 
-async def start_server() -> None:
+@app.route('/login')
+def login() -> str:
     """
-    This function starts the server to listen for the callback.
+    Redirects the user to the IVAO SSO for authentication.
     """
-    app.run(debug=False, port=3000)
+    return redirect(oauth2.get_sso_url())
 
-async def get_authorization_code() -> str:
+@app.route('/userdata')
+async def userdata() -> str:
     """
-    This function starts the server and gets the authorization code from the user.
+    Demo site to show the user the authorization code.
+    Also shows the user's information if the user is authenticated.
 
     Returns
     -------
-    Authorization code: `str`
-        The authorization code received from the user.
+    Result: `str`
+        A message to the user in the browser with the authorization code and user information from the IVAO API.
     """
-    global authorization_code
-    asyncio.create_task(start_server())
-    sso_url = oauth2.get_sso_url()
-    print(f'Please visit this URL to authenticate: {sso_url}')
-    while authorization_code is None:
-        await asyncio.sleep(0.1)
-    return authorization_code
+    cookies = getcookie()
+    if 'authorization_code' in cookies:
+        userdata = await oauth2.getUserInfo(authtoken=cookies["authorization_code"])
+        return f'You have successfully authenticated and gotten the authorization code.<br><br>Your authorization code is: {cookies["authorization_code"]}<br><br>User data:<br>{userdata}'
+    else:
+        return 'You have not authenticated yet. Please authenticate first by clicking the button below.<br><br><a href="/login">Authenticate</a>'
 
-async def main() -> None:
+async def start_server(server_started: asyncio.Event) -> None:
     """
-    This function gets the authorization code from the user and prints it to the console.
+    This function starts the server to listen for the callback.
+
+    Parameters
+    ----------
+    server_started: `asyncio.Event`
+        An asyncio event to signal when the server has started.
 
     Returns
     -------
     None
     """
-    authorization_code = await get_authorization_code()
-    print(f'Authorization code: {authorization_code}')
+    app.run(port=3000)
+    server_started.set()
+
+def getcookie() -> dict:
+    """
+    This function is used to get the cookie from the browser storage printed for the user.
+
+    Returns
+    -------
+    Result: `dict`
+        The cookie stored in the browser.
+    """
+
+    return request.cookies
+
+async def main() -> None:
+    """
+    This function starts the server and gets the authorization code from the user.
+
+    Returns
+    -------
+    None
+    """
+    server_started = asyncio.Event()
+
+    asyncio.create_task(start_server(server_started))
+    await server_started.wait()
+
+    await asyncio.sleep(1)
+
+    while True:
+        authorization_code = request.cookies.get('authorization_code')
+        if authorization_code:
+            print(f'Authorization code: {authorization_code}')
+            break
+        await asyncio.sleep(0.1)
 
 if __name__ == '__main__':
     """
