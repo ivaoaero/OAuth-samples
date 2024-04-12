@@ -37,15 +37,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-CLIENT_ID = os.getenv("CLIENT_ID")
-CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-CLIENT_STATE = os.getenv("STATE")
-OPENID_URL = os.getenv("OPENID_URL")
-REDIRECT_URI = os.getenv("REDIRECT_URI")
-YOUR_SITE_DOMAIN = os.getenv("YOUR_SITE_DOMAIN")
+CLIENT_ID: str = os.getenv("CLIENT_ID")
+CLIENT_SECRET: str = os.getenv("CLIENT_SECRET")
+CLIENT_STATE: str = os.getenv("STATE")
+OPENID_URL: str = os.getenv("OPENID_URL")
+REDIRECT_URI: str = os.getenv("REDIRECT_URI")
+YOUR_SITE_DOMAIN: str = os.getenv("YOUR_SITE_DOMAIN")
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # Set a secret key for session management
+app.secret_key = os.urandom(random.randint(1, 2048))  # Set a secret key for session management
 
 oauth2 = OAuth2(CLIENT_ID, CLIENT_SECRET, CLIENT_STATE, OPENID_URL, REDIRECT_URI)
 
@@ -70,14 +70,26 @@ async def callback() -> str:
         authorization_code = request.args.get('code')
         authorization_code = authorization_code.split(' ')[0]
         userinfo = await oauth2.getUserInfo(authtoken=authorization_code)
-        success = f'Authentication successful, you can close this tab.\nYour authorization code is:\n{authorization_code}\n'
-        user = f'Your user info:\n{userinfo}\n'
+        try:
+            if userinfo['message'] == 'Forbidden':
+                return redirect('/login')
+        except:
+            pass
+        success = f'Your authorization code is:<br>{authorization_code}<br><hr>'
+        user = f'Your user info:<br>{userinfo}<br><hr>'
         msg = success + user
         response = make_response(msg)
         response.set_cookie('authorization_code', authorization_code, max_age=1800) # Set the cookie to expire in 30 minutes (1800 seconds)
 
         # This will be the actual code you want to use, containing a site restriction and secure cookie.
         # response.set_cookie('authorization_code', authorization_code, max_age=1800, domain=YOUR_SITE_DOMAIN, secure=True, httponly=True, samesite='Strict')
+    
+        # max_age -> The maximum lifetime of the cookie in seconds.
+        # domain -> The domain that the cookie is valid for.
+        # secure -> Whether the cookie should only be sent over HTTPS.
+        # httponly -> Whether the cookie should be hidden from JavaScript.
+        # samesite -> The SameSite attribute of the cookie, meaning how the cookie should be sent in cross-site requests. Strict is the most secure option because it will only send the cookie if the request is from the same site as the cookies has been set on.
+
         return response, str(request.cookies)
 
     except AttributeError:
@@ -108,6 +120,8 @@ async def userdata() -> str:
     cookies = getcookie()
     if 'authorization_code' in cookies:
         userdata = await oauth2.getUserInfo(authtoken=cookies["authorization_code"])
+        if userdata['message'] == 'Forbidden':
+            return 'You have not authenticated yet. Please authenticate first by clicking the button below.<br><br><a href="/login">Authenticate</a>'
         return f'You have successfully authenticated and gotten the authorization code.<br><br>Your authorization code is: {cookies["authorization_code"]}<br><br>User data:<br>{userdata}'
     else:
         return 'You have not authenticated yet. Please authenticate first by clicking the button below.<br><br><a href="/login">Authenticate</a>'
