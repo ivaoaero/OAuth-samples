@@ -1,0 +1,21 @@
+{
+  "name": "nodejs-pure",
+  "version": "1.0.0",
+  "description": "IVAO OAuth code samples",
+  "main": "client-credentials.js",
+  "scripts": {
+    "client-credentials": "node ./client-credentials.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ivaoaero/OAuth-samples.git"
+  },
+  "author": "DevOps - Web <web@ivao.aero>",
+  "bugs": {
+    "url": "https://github.com/ivaoaero/OAuth-samples/issues"
+  },
+  "homepage": "https://github.com/ivaoaero/OAuth-samples#readme",
+  "dependencies": {
+    "axios": "^1.6.8"
+  }
+}
