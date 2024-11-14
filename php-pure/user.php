@@ -120,6 +120,16 @@ if (isset($_GET['code']) && isset($_GET['state'])) {
         header('Location: ' . $redirect_uri); // Try to login again
     }
 
+    /* 
+        Because json_decode will not maintain the JSON structure, we need to make the user hours associative 
+        Thereafter, the resulting array will be compliant with https://api.ivao.aero/docs
+    */
+    $assoc_hours = array();
+    foreach ($user_res_data['hours'] as $entry) {
+        $assoc_hours[$entry['type']] = $entry['hours'];
+    }
+    $user_res_data['hours'] = $assoc_hours;
+
     var_dump($user_res_data); // Display user data (/v2/users/me in Core Doc) fetched with the access token
 } else {
     // First visit : Unauthenticated user
