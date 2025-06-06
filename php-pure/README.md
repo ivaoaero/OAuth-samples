@@ -1,5 +1,7 @@
 # PHP Pure Code Examples
 
+> PHP >= 5.6 is required to run this code.
+
 ## Authenticate a user
 _File `user.php`_
 
