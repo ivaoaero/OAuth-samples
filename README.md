@@ -1,8 +1,18 @@
 # IVAO OAuth2 Code Samples
 
+## Notice about changed error messages
+> Due to a change in the internal authentication system, the error messages have changed.
+> 
+> The messages will change again soon (days).
+> 
+> Temporarily, the `php-pure` example has been updated to work until new error messages are implemented in our authentication system.
+> The other examples will be updated once that is done with the new error messages.
+> 
+> We will notify all developers about the changes once they are done.
+
 ## Availability
-Currently, the IVAO OAuth2 API is only available for IVAO divisions.
-We are planning on extending this feature to Virtual Airlines, Partners and 3rd party developers soon.
+Currently, the IVAO OAuth2 API is available for IVAO HQ applications, IVAO divisions, Virtual Airlines, Partners and other 3rd party developers.
+You can get your credentials at [our developers page](https://developers.ivao.aero).
 
 ## General comments
 ### Description
