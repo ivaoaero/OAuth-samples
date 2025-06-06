@@ -1,8 +1,8 @@
 # IVAO OAuth2 Code Samples
 
 ## Availability
-Currently, the IVAO OAuth2 API is only available for IVAO divisions.
-We are planning on extending this feature to Virtual Airlines, Partners and 3rd party developers soon.
+Currently, the IVAO OAuth2 API is available for IVAO HQ applications, IVAO divisions, Virtual Airlines, Partners and other 3rd party developers.
+You can get your credentials at [our developers page](https://developers.ivao.aero).
 
 ## General comments
 ### Description
